@@ -41,7 +41,23 @@ const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
   const [dashboardData, setDashboardData] = useState(null);
+
+  {/* PENDING PRINT JOBS PAGINATION LOGIC */}
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5;
   const navigate = useNavigate();
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentRows = dashboardData?.pending_print_jobs?.slice(indexOfFirstRow, indexOfLastRow);
+  const totalPages = Math.ceil(dashboardData?.pending_print_jobs?.length / rowsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -89,14 +105,14 @@ const Index = (props) => {
                     <h3 className="mb-0">Pending Print Jobs</h3>
                   </div>
                   <div className="col text-right">
-                    <Button
+                    {/* <Button
                       color="primary"
                       href="#pablo"
                       onClick={(e) => e.preventDefault()}
                       size="sm"
                     >
                       See all
-                    </Button>
+                    </Button> */}
                   </div>
                 </Row>
               </CardHeader>
@@ -113,34 +129,41 @@ const Index = (props) => {
                   </tr>
                 </thead>
                 <tbody>
-                {dashboardData?.pending_print_jobs?.map((job, index) => (
-                  <tr key={index}>
-                    <th scope="row">{job.user_name}</th>
-                    <td>{job.bw_pages + job.color_pages}</td>
-                    <td>{new Date(job.created_at).toLocaleDateString()}</td> 
-                    <td>{job.amount ? `$${job.amount}` : "N/A"}</td>
-                    <td>{job.status}</td>
-                    <td>
-                      <a
-                        href={`${MY_BASE_URL}${job.document}`}
-                        target="_blank"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.open(`${MY_BASE_URL}${job.document}`, '_blank', 'toolbar=0,location=0,menubar=0');
-                        }}
-                      >
-                        View Document
-                      </a>
-                    </td>
-                    <td>
-                      <Button color="warning" size="sm">
-                        Action
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+                  {currentRows?.map((job, index) => (
+                    <tr key={index}>
+                      <th scope="row">{job.user_name}</th>
+                      <td>{job.bw_pages + job.color_pages}</td>
+                      <td>{new Date(job.created_at).toLocaleDateString()}</td>
+                      <td>{job.amount ? `INR ${job.amount}` : "N/A"}</td>
+                      <td>{job.status ? job.status.charAt(0).toUpperCase() + job.status.slice(1) : "N/A"}</td>
+                      <td>
+                        <a
+                          href={`${MY_BASE_URL}${job.document}`}
+                          target="_blank"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            window.open(`${MY_BASE_URL}${job.document}`, '_blank', 'toolbar=0,location=0,menubar=0');
+                          }}
+                        >
+                          View Document
+                        </a>
+                      </td>
+                      <td>
+                        <Button color="warning" size="sm">Action</Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
               </Table>
+              <div className="pagination-controls">
+                <Button color="primary" disabled={currentPage === 1} onClick={handlePrevPage}>
+                  Previous
+                </Button>
+                <span>{`Page ${currentPage} of ${totalPages}`} </span>
+                <Button color="primary" disabled={currentPage === totalPages} onClick={handleNextPage}>
+                  Next
+                </Button>
+              </div>
             </Card>
           </Col>
         </Row>
