@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
+import CountUp from "react-countup";
 
 const MY_BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -25,6 +26,7 @@ const Header = () => {
       console.error("Error fetching data", error);
     });
   }, []); 
+
   return (
     <>
       <div className="header bg-gradient-info pb-8 pt-5 pt-md-8">
@@ -32,6 +34,7 @@ const Header = () => {
           <div className="header-body">
             {/* Card stats */}
             <Row>
+              {/* Total Revenue */}
               <Col lg="6" xl="3">
                 <Card className="card-stats mb-4 mb-xl-0">
                   <CardBody>
@@ -43,9 +46,15 @@ const Header = () => {
                         >
                           Total Revenue
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">
-                          {dashboardData?.total_revenue_all_time}
-                        </span>
+                        <CountUp
+                          className="h2 font-weight-bold mb-0"
+                          start={0}
+                          end={parseFloat(dashboardData?.total_revenue_all_time || 0)}
+                          duration={2.0}
+                          decimals={2}
+                          prefix="INR "
+                          separator=","
+                        />
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-danger text-white rounded-circle shadow">
@@ -55,13 +64,33 @@ const Header = () => {
                     </Row>
                     <p className="mt-3 mb-0 text-muted text-sm">
                       <span className="mr-2">
-                        <span className="text-nowrap">Current month: </span><span className="text-success">{dashboardData?.data[0]?.total_revenue}</span> <br />
-                        <span className="text-nowrap">Last month: </span><span className="text-success">{dashboardData?.data[1]?.total_revenue}</span>
-                      </span>{" "}
+                        <span className="text-nowrap">Current month: </span>
+                        <CountUp
+                          className="text-success"
+                          start={0}
+                          end={parseFloat(dashboardData?.data[0]?.total_revenue || 0)}
+                          duration={2.0}
+                          decimals={2}
+                          prefix="INR "
+                          separator=","
+                        /> <br />
+                        <span className="text-nowrap">Last month: </span>
+                        <CountUp
+                          className="text-success"
+                          start={0}
+                          end={parseFloat(dashboardData?.data[1]?.total_revenue || 0)}
+                          duration={2.0}
+                          decimals={2}
+                          prefix="INR "
+                          separator=","
+                        />
+                      </span>
                     </p>
                   </CardBody>
                 </Card>
               </Col>
+
+              {/* Total Customers */}
               <Col lg="6" xl="3">
                 <Card className="card-stats mb-4 mb-xl-0">
                   <CardBody>
@@ -73,7 +102,13 @@ const Header = () => {
                         >
                           Total Customers
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">{dashboardData?.total_customers_all_time}</span>
+                        <CountUp
+                          className="h2 font-weight-bold mb-0"
+                          start={0}
+                          end={parseFloat(dashboardData?.total_customers_all_time || 0)}
+                          duration={2.0}
+                          separator=","
+                        />
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-warning text-white rounded-circle shadow">
@@ -83,13 +118,29 @@ const Header = () => {
                     </Row>
                     <p className="mt-3 mb-0 text-muted text-sm">
                       <span className="mr-2">
-                        <span className="text-nowrap">Current month: </span><span className="text-success">{dashboardData?.data[0]?.total_customers}</span> <br />
-                        <span className="text-nowrap">Last month: </span><span className="text-success">{dashboardData?.data[1]?.total_customers}</span>
-                      </span>{" "}
+                        <span className="text-nowrap">Current month: </span>
+                        <CountUp
+                          className="text-success"
+                          start={0}
+                          end={parseFloat(dashboardData?.data[0]?.total_customers || 0)}
+                          duration={2.0}
+                          separator=","
+                        /> <br />
+                        <span className="text-nowrap">Last month: </span>
+                        <CountUp
+                          className="text-success"
+                          start={0}
+                          end={parseFloat(dashboardData?.data[1]?.total_customers || 0)}
+                          duration={2.0}
+                          separator=","
+                        />
+                      </span>
                     </p>
                   </CardBody>
                 </Card>
               </Col>
+
+              {/* Total Prints */}
               <Col lg="6" xl="3">
                 <Card className="card-stats mb-4 mb-xl-0">
                   <CardBody>
@@ -101,7 +152,13 @@ const Header = () => {
                         >
                           Total Prints
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">{dashboardData?.total_bookings_all_time}</span>
+                        <CountUp
+                          className="h2 font-weight-bold mb-0"
+                          start={0}
+                          end={parseFloat(dashboardData?.total_bookings_all_time || 0)}
+                          duration={2.0}
+                          separator=","
+                        />
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">
@@ -111,41 +168,71 @@ const Header = () => {
                     </Row>
                     <p className="mt-3 mb-0 text-muted text-sm">
                       <span className="mr-2">
-                        <span className="text-nowrap">Current month: </span><span className="text-success">{dashboardData?.data[0]?.total_bookings}</span> <br />
-                        <span className="text-nowrap">Last month: </span><span className="text-success">{dashboardData?.data[1]?.total_bookings}</span>
-                      </span>{" "}
+                        <span className="text-nowrap">Current month: </span>
+                        <CountUp
+                          className="text-success"
+                          start={0}
+                          end={parseFloat(dashboardData?.data[0]?.total_bookings || 0)}
+                          duration={2.0}
+                          separator=","
+                        /> <br />
+                        <span className="text-nowrap">Last month: </span>
+                        <CountUp
+                          className="text-success"
+                          start={0}
+                          end={parseFloat(dashboardData?.data[1]?.total_bookings || 0)}
+                          duration={2.0}
+                          separator=","
+                        />
+                      </span>
                     </p>
                   </CardBody>
                 </Card>
               </Col>
+
+              {/* Overall Performance */}
               <Col lg="6" xl="3">
-              <Card className="card-stats mb-1 mb-xl-0">
-                <CardBody>
-                  <Row>
-                    <div className="col">
-                      <CardTitle
-                        tag="h5"
-                        className="text-uppercase text-muted d-flex align-items-center justify-content-between"
-                        style={{ margin: 0 }}
-                      >
-                        <span>Overall Performance</span>
-                        <div className="icon icon-shape bg-info text-white rounded-circle shadow">
-                          <i className="fas fa-percent" />
-                        </div>
-                      </CardTitle>
-                      <span className="h2 font-weight-bold" style={{ marginTop: "0.25rem", marginBottom: "0" }}>
-                        {parseFloat(dashboardData?.all_time_performance?.percentage).toFixed(2)}%
+                <Card className="card-stats mb-1 mb-xl-0">
+                  <CardBody>
+                    <Row>
+                      <div className="col">
+                        <CardTitle
+                          tag="h5"
+                          className="text-uppercase text-muted d-flex align-items-center justify-content-between"
+                          style={{ margin: 0 }}
+                        >
+                          <span>Overall Performance</span>
+                          <div className="icon icon-shape bg-info text-white rounded-circle shadow">
+                            <i className="fas fa-percent" />
+                          </div>
+                        </CardTitle>
+                        <CountUp
+                          className="h2 font-weight-bold"
+                          start={0}
+                          end={parseFloat(dashboardData?.all_time_performance?.percentage || 0)}
+                          duration={2.0}
+                          decimals={2}
+                          suffix="%"
+                          style={{ marginTop: "0.25rem", marginBottom: "0" }}
+                        />
+                      </div>
+                    </Row>
+                    <p className="mt-1 mb-0 text-muted text-sm">
+                      <span className="text-success mr-2">
+                        <i className="fas fa-arrow-up" />
+                        <CountUp
+                          className="text-success"
+                          start={0}
+                          end={parseFloat(dashboardData?.data[1]?.performance.percentage || 0)}
+                          duration={2.0}
+                          decimals={2}
+                          suffix="%"
+                        />
                       </span>
-                    </div>
-                  </Row>
-                  <p className="mt-1 mb-0 text-muted text-sm">
-                    <span className="text-success mr-2">
-                      <i className="fas fa-arrow-up" /> {dashboardData?.data[1]?.performance.percentage}%
-                    </span>{" "}
-                    <span className="text-nowrap">Since last month</span>
-                  </p>
-                </CardBody>
-              </Card>
+                      <span className="text-nowrap">Since last month</span>
+                    </p>
+                  </CardBody>
+                </Card>
               </Col>
             </Row>
           </div>

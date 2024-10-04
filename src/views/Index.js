@@ -18,7 +18,10 @@ import {
   Table,
   Container,
   Row,
-  Col,
+  Col, 
+  Pagination, 
+  PaginationItem, 
+  PaginationLink 
 } from "reactstrap";
 
 // core components
@@ -57,6 +60,10 @@ const Index = (props) => {
 
   const handlePrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   useEffect(() => {
@@ -149,20 +156,43 @@ const Index = (props) => {
                         </a>
                       </td>
                       <td>
-                        <Button color="warning" size="sm">Action</Button>
+                        <Button color="success" size="sm" className="mr-2">
+                          <i className="fa fa-check-circle" aria-hidden="true"></i>
+                        </Button>
+                        <Button color="danger" size="sm">
+                          <i className="fa fa-times-circle" aria-hidden="true"></i>
+                        </Button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </Table>
-              <div className="pagination-controls">
-                <Button color="primary" disabled={currentPage === 1} onClick={handlePrevPage}>
-                  Previous
-                </Button>
-                <span>{`Page ${currentPage} of ${totalPages}`} </span>
-                <Button color="primary" disabled={currentPage === totalPages} onClick={handleNextPage}>
-                  Next
-                </Button>
+              <div className="pagination-controls ml-4">
+                <Pagination aria-label="Page navigation example">
+                  <PaginationItem disabled={currentPage === 1}>
+                    <PaginationLink first onClick={() => handlePageChange(1)} />
+                  </PaginationItem>
+
+                  <PaginationItem disabled={currentPage === 1}>
+                    <PaginationLink previous onClick={handlePrevPage} />
+                  </PaginationItem>
+
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <PaginationItem active={currentPage === index + 1} key={index}>
+                      <PaginationLink onClick={() => handlePageChange(index + 1)}>
+                        {index + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem disabled={currentPage === totalPages}>
+                    <PaginationLink next onClick={handleNextPage} />
+                  </PaginationItem>
+
+                  <PaginationItem disabled={currentPage === totalPages}>
+                    <PaginationLink last onClick={() => handlePageChange(totalPages)} />
+                  </PaginationItem>
+                </Pagination>
               </div>
             </Card>
           </Col>
