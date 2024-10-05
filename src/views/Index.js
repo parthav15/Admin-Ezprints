@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
-// node.js library that concatenates classes (strings)
 import classnames from "classnames";
-// javascipt plugin for creating charts
 import Chart from "chart.js";
-// react plugin used to create charts
 import { Line, Bar } from "react-chartjs-2";
-// reactstrap components
 import {
   Button,
   Card,
@@ -24,7 +20,6 @@ import {
   PaginationLink 
 } from "reactstrap";
 
-// core components
 import {
   chartOptions,
   parseOptions,
@@ -38,12 +33,20 @@ import { useNavigate } from "react-router-dom";
 
 import axios from "axios";
 
+import ConfirmationModal from "components/Modals/ConfirmationModal";
+
 const MY_BASE_URL = process.env.REACT_APP_BASE_URL;
 
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
   const [dashboardData, setDashboardData] = useState(null);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [isTickModalOpen, setIsTickModalOpen] = useState(false);
+  const [isCrossModalOpen, setIsCrossModalOpen] = useState(false);
+
+  const toggleTickModal = () => setIsTickModalOpen(!isTickModalOpen);
+  const toggleCrossModal = () => setIsCrossModalOpen(!isCrossModalOpen);
 
   {/* PENDING PRINT JOBS PAGINATION LOGIC */}
   const [currentPage, setCurrentPage] = useState(1);
@@ -98,6 +101,54 @@ const Index = (props) => {
     setChartExample1Data("data" + index);
   };
 
+  const handleConfirmTick = async (job) => {
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("print_job_id", job.id);
+    formData.append("approve", true); 
+  
+    try {
+      const response = await axios.post(`${MY_BASE_URL}admin_panel/approve_decline/`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (response.data.success) {
+        console.log('Job approved:', response.data);
+        window.location.reload();
+      } else {
+        console.error('Failed to approve job:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error approving job:', error);
+    }
+  };
+
+  const handleConfirmCross = async (job) => {
+    const token = localStorage.getItem("token"); 
+    const formData = new FormData();
+    formData.append("print_job_id", job.id);
+    formData.append("decline", true); 
+  
+    try {
+      const response = await axios.post(`${MY_BASE_URL}admin_panel/approve_decline/`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (response.data.success) {
+        console.log('Job declined:', response.data);
+        window.location.reload();
+      } else {
+        console.error('Failed to decline job:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error declining job:', error);
+    }
+  };
+
   return (
     <>
       <Header />
@@ -110,16 +161,6 @@ const Index = (props) => {
                 <Row className="align-items-center">
                   <div className="col">
                     <h3 className="mb-0">Pending Print Jobs</h3>
-                  </div>
-                  <div className="col text-right">
-                    {/* <Button
-                      color="primary"
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                      size="sm"
-                    >
-                      See all
-                    </Button> */}
                   </div>
                 </Row>
               </CardHeader>
@@ -156,17 +197,29 @@ const Index = (props) => {
                         </a>
                       </td>
                       <td>
-                        <Button color="success" size="sm" className="mr-2">
-                          <i className="fa fa-check-circle" aria-hidden="true"></i>
-                        </Button>
-                        <Button color="danger" size="sm">
-                          <i className="fa fa-times-circle" aria-hidden="true"></i>
-                        </Button>
+                        <i className="fas fa-check" style={{ color: "green", cursor: "pointer" }} 
+                          onClick={() => { setSelectedJob(job); toggleTickModal(); }}></i>
+                        <i className="fas fa-times" style={{ color: "red", cursor: "pointer", marginLeft: "10px" }} 
+                          onClick={() => { setSelectedJob(job); toggleCrossModal(); }}></i>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </Table>
+              <ConfirmationModal
+                isOpen={isTickModalOpen}
+                toggleModal={toggleTickModal}
+                title="Confirm Print Job"
+                message="Are you sure you want to approve this job?"
+                onConfirm={() => handleConfirmTick(selectedJob)}
+              />
+              <ConfirmationModal
+                isOpen={isCrossModalOpen}
+                toggleModal={toggleCrossModal}
+                title="Reject Print Job"
+                message="Are you sure you want to reject this job?"
+                onConfirm={() => handleConfirmCross(selectedJob)}
+              />
               <div className="pagination-controls ml-4">
                 <Pagination aria-label="Page navigation example">
                   <PaginationItem disabled={currentPage === 1}>
