@@ -21,6 +21,10 @@ import { useNavigate } from "react-router-dom";
 
 import ezprints from "../../assets/img/brand/logo.png";
 
+import userprofile from "../../assets/animations/userProfile.json";
+
+import Lottie from "lottie-react";
+
 const AdminNavbar = (props) => {
   const navigate = useNavigate();
 
@@ -58,11 +62,8 @@ const AdminNavbar = (props) => {
             <UncontrolledDropdown nav>
               <DropdownToggle className="pr-0" nav>
                 <Media className="align-items-center">
-                  <span className="avatar avatar-sm rounded-circle">
-                    <img
-                      alt="..."
-                      src={ezprints}
-                    />
+                  <span className="avatar rounded-circle overflow-hidden">
+                    <Lottie className="profile" animationData={userprofile} autoPlay loop style={{ width: "100%", height: "100%" }} />
                   </span>
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">

@@ -45,6 +45,10 @@ const Index = (props) => {
   const [isTickModalOpen, setIsTickModalOpen] = useState(false);
   const [isCrossModalOpen, setIsCrossModalOpen] = useState(false);
 
+  // Dynamic Chart Data for Sales and Orders Chart
+  const [salesData, setSalesData] = useState({ labels: [], values: [] });
+  const [ordersData, setOrdersData] = useState({ labels: [], values: [] });
+
   const toggleTickModal = () => setIsTickModalOpen(!isTickModalOpen);
   const toggleCrossModal = () => setIsCrossModalOpen(!isCrossModalOpen);
 
@@ -83,6 +87,15 @@ const Index = (props) => {
         .then((response) => {
           if (response.data.success) {
             setDashboardData(response.data);
+
+            const chartData = response.data.data;
+
+            const months = chartData.map(item => item.month);
+            const totalRevenue = chartData.map(item => parseFloat(item.total_revenue));
+            const totalBookings = chartData.map(item => item.total_bookings);
+
+            setSalesData({ labels: months, values: totalRevenue });
+            setOrdersData({ labels: months, values: totalBookings });
           }
         })
         .catch((error) => {
@@ -261,45 +274,61 @@ const Index = (props) => {
                     </h6>
                     <h2 className="text-white mb-0">Sales value</h2>
                   </div>
-                  <div className="col">
-                    <Nav className="justify-content-end" pills>
-                      <NavItem>
-                        <NavLink
-                          className={classnames("py-2 px-3", {
-                            active: activeNav === 1,
-                          })}
-                          href="#pablo"
-                          onClick={(e) => toggleNavs(e, 1)}
-                        >
-                          <span className="d-none d-md-block">Month</span>
-                          <span className="d-md-none">M</span>
-                        </NavLink>
-                      </NavItem>
-                      <NavItem>
-                        <NavLink
-                          className={classnames("py-2 px-3", {
-                            active: activeNav === 2,
-                          })}
-                          data-toggle="tab"
-                          href="#pablo"
-                          onClick={(e) => toggleNavs(e, 2)}
-                        >
-                          <span className="d-none d-md-block">Week</span>
-                          <span className="d-md-none">W</span>
-                        </NavLink>
-                      </NavItem>
-                    </Nav>
-                  </div>
                 </Row>
               </CardHeader>
               <CardBody>
-                {/* Chart */}
                 <div className="chart">
-                  <Line
-                    data={chartExample1[chartExample1Data]}
-                    options={chartExample1.options}
-                    getDatasetAtEvent={(e) => console.log(e)}
-                  />
+                <Line
+                  data={{
+                    labels: salesData.labels.reverse(), 
+                    datasets: [
+                      {
+                        label: "Sales",
+                        data: salesData.values.reverse(),
+                        backgroundColor: "rgba(72, 72, 176, 0.1)",
+                        borderColor: "#d048b6",
+                        pointBackgroundColor: "#d048b6",
+                        fill: true,
+                      },  
+                    ],
+                  }}
+                  options={{
+                    scales: {
+                      x: {
+                        title: {
+                          display: true,
+                          text: "Months",
+                        },
+                        ticks: {
+                          autoSkip: false, 
+                          maxRotation: 45,
+                          minRotation: 0,
+                        },
+                      },
+                      y: {
+                        title: {
+                          display: true,
+                          text: "Revenue (INR)",
+                        },
+                        ticks: {
+                          beginAtZero: true, 
+                          callback: function (value) {
+                            return "INR" + value;
+                          },
+                        },
+                      },
+                    },
+                    plugins: {
+                      tooltip: {
+                        callbacks: {
+                          label: function (tooltipItem) {
+                            return `Sales: INR${tooltipItem.raw}`;
+                          },
+                        },
+                      },
+                    },
+                  }}
+                />
                 </div>
               </CardBody>
             </Card>
@@ -317,10 +346,17 @@ const Index = (props) => {
                 </Row>
               </CardHeader>
               <CardBody>
-                {/* Chart */}
                 <div className="chart">
                   <Bar
-                    data={chartExample2.data}
+                    data={{
+                      labels: ordersData ? ordersData.labels : [],
+                      datasets: [
+                        {
+                          label: "Orders",
+                          data: ordersData ? ordersData.values : [],
+                        },
+                      ],
+                    }}
                     options={chartExample2.options}
                   />
                 </div>
